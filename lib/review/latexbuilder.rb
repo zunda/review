@@ -271,8 +271,9 @@ module ReVIEW
 
     def list_body(id, lines)
       puts '\begin{reviewlist}'
+      lexer = File.extname(id).gsub(/\./, '')
       lines.each do |line|
-        puts detab(line)
+        puts highlight(:body => unescape_latex(detab(line)), :lexer => lexer, :format => 'latex')
       end
       puts '\end{reviewlist}'
       puts ""
