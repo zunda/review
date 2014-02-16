@@ -21,7 +21,14 @@ module ReVIEW
 
     CAPTION_TITLES = %w(note memo tip info planning best important security caution term link notice point shoot reference practice expert)
 
-    attr_writer :highlighter_opts
+    def highlighter
+      @highlighter
+    end
+
+    def highlighter=(highlighter)
+      @highlighter = highlighter
+      @highlighter.builder = self
+    end
 
     def pre_paragraph
       nil
@@ -36,7 +43,7 @@ module ReVIEW
       if ReVIEW.book.param && ReVIEW.book.param["tabwidth"]
         @tabwidth = ReVIEW.book.param["tabwidth"]
       end
-      @highlighter_opts = {}
+      @highlighter = nil
       builder_init(*args)
     end
 
