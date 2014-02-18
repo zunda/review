@@ -300,6 +300,15 @@ class HTMLBuidlerTest < Test::Unit::TestCase
     assert_equal %Q|<div class="caption-code">\n<p class="caption">リスト1.1: this is <b>test</b>&lt;&amp;&gt;_</p>\n<pre class="list">test1\ntest1.5\n\ntest<i>2</i>\n</pre>\n</div>\n|, @builder.raw_result
   end
 
+  def test_list_escape
+    def @chapter.list(id)
+      Book::ListIndex::Item.new("samplelist",1)
+    end
+    @builder.list(["<h1>HTML</h1>"], "samplelist", "test")
+
+    assert_equal %Q|<div class="caption-code">\n<p class="caption">リスト1.1: test</p>\n<pre class="list">&lt;h1&gt;HTML:&lt/h1&gt;\n</pre>\n</div>\n|, @builder.raw_result
+  end
+
   def test_emlist
     @builder.emlist(["lineA","lineB"])
     assert_equal %Q|<div class="emlist-code">\n<pre class="emlist">lineA\nlineB\n</pre>\n</div>\n|, @builder.raw_result
@@ -689,6 +698,15 @@ begin
       @builder.list(["test1", "test1.5", "", "test<i>2</i>"], "samplelist", "this is @<b>{test}<&>_")
 
       assert_equal %Q|<div class="caption-code">\n<p class="caption">リスト1.1: this is <b>test</b>&lt;&amp;&gt;_</p>\n<pre class="list">test1\ntest1.5\n\ntest<span style="color: #008000; font-weight: bold">&lt;i&gt;</span>2<span style="color: #008000; font-weight: bold">&lt;/i&gt;</span>\n</pre>\n</div>\n|, @builder.raw_result
+    end
+
+    def test_list_escape
+      def @chapter.list(id)
+        Book::ListIndex::Item.new("samplelist",1)
+      end
+      @builder.list(["<h1>HTML</h1>"], "samplelist", "test")
+
+      assert_equal %Q|<div class="caption-code">\n<p class="caption">リスト1.1: test</p>\n<pre class="list"><span style="color: #008000; font-weight: bold">&lt;h1&gt;</span>HTML<span style="color: #008000; font-weight: bold">&lt;/h1&gt;</span>\n</pre>\n</div>\n|, @builder.raw_result
     end
   end
 rescue LoadError
