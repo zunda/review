@@ -249,6 +249,15 @@ class LATEXBuidlerTest < Test::Unit::TestCase
     assert_equal %Q|\\reviewlistcaption{リスト1.1: this is \\textbf{test}\\textless{}\\&\\textgreater{}\\textunderscore{}}\n\\begin{reviewlist}\ntest1\ntest1.5\n\ntest<i>2</i>\n\\end{reviewlist}\n\n|, @builder.raw_result
   end
 
+  def test_list_escape
+    def @chapter.list(id)
+      Book::ListIndex::Item.new("samplelist",1)
+    end
+    @builder.list(["\documentclass[oneside]{book}"], "samplelist", "test")
+
+    assert_equal %Q|\\reviewlistcaption{リスト1.1: test}\n\\begin{reviewlist}\n\\reviewbackslash{}documentclass[onside]\\{book\\}\n\\end{reviewlist}\n\n|, @builder.raw_result
+  end
+
   def test_emlist
     lines = ["foo", "bar", "","buz"]
     @builder.emlist(lines)
@@ -723,6 +732,15 @@ begin
       @builder.list(["test1", "test1.5", "", "test<i>2</i>"], "samplelist", "this is @<b>{test}<&>_")
 
       assert_equal %Q|\\reviewlistcaption{リスト1.1: this is \\textbf{test}\\textless{}\\&\\textgreater{}\\textunderscore{}}\n\\begin{reviewlist}\n\\begin{Verbatim}[commandchars=\\\\\\{\\}]\ntest1\ntest1.5\n\ntest\\PY{n+nt}{\\PYZlt{}i}\\PY{n+nt}{\\PYZgt{}}2\\PY{n+nt}{\\PYZlt{}/i\\PYZgt{}}\n\\end{Verbatim}\n\\end{reviewlist}\n\n|, @builder.raw_result
+    end
+
+    def test_list_escape
+      def @chapter.list(id)
+        Book::ListIndex::Item.new("samplelist",1)
+      end
+      @builder.list(["\documentclass[oneside]{book}"], "samplelist", "test")
+
+      assert_equal %Q|\\reviewlistcaption{リスト1.1: test}\n\\begin{reviewlist}\n\\begin{Verbatim}[commandchars=\\\\\\\{\\}]\n\\PY{k}{\\PYZbs{}documentclass}\\PY{n+na}{[onside]}\\PY{n+nb}{\\PYZob{}}book\\PY{n+nb}{\\PYZcb{}}\n\\end{Verbatim}\n\\end{reviewlist}\n\n|, @builder.raw_result
     end
   end
 rescue LoadError
